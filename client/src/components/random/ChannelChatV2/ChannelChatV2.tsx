@@ -90,7 +90,7 @@ function MinimalChat({ }: Props): ReactElement {
     }, [msgList])
 
     return (
-        <section className="flexRow">
+        <section className="flexColumn">
             {
                 (info.online) ? <p>connected</p> : <p>unconnected</p>
             }
@@ -105,7 +105,7 @@ function MinimalChat({ }: Props): ReactElement {
                 onChange={(e) => setUserInfo(old => ({...old, roomName : e.target.value}))}
             />
             <form>
-                <section className="flexRow cardChat overflowY breakAll">
+                <section className="flexColumn cardChat overflowY breakAll">
                     {
                         msgList.map(e => <div className="w800">{e.objData}</div>)
                     }
