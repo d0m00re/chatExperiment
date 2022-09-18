@@ -1,4 +1,4 @@
-export type TAction = 'msg' | 'join' | 'leave';
+import {IMessage, IRoom, TAction} from "@lib/sharedTypes/chatRoom.d";
 
 export interface IMsg {
     msg : string;
@@ -12,17 +12,8 @@ export interface IMessageInput {
     message : string;
 }
   
-  
-export interface IMessage {
-    uuid : string;
-    username : string;
-    message : string;
-    time : Date;
-}
-  
-  // i message function
-  
-export interface IRoom {
-    roomName : string;
-    messageList : IMessage[]
+export {
+    IMessage,
+    IRoom,
+    TAction
 }

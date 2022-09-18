@@ -1,4 +1,4 @@
-import './App.css'
+import './App.css';
 import PageRoomList from './components/pages/RoomList';
 
 function App() {

@@ -54,16 +54,13 @@ export const makeEmptyRoom = () : IState => ({
 export const roomListReducer = (state : IState, action : IActionReducer) : IState => {
     switch (action.type) {
         case E_ACTION.ADD_ROOM: {
+            console.log("WTF")
             return {
                 ...state,
                 roomList : [...state.roomList, action.payload.roomName]
             }
         }
         case E_ACTION.SET_ROOM_SELECT: {
-            console.log("SET ROOM SELECT : ", {
-                ...state,
-                roomSelect : action.payload.roomId
-            })
             return {
                 ...state,
                 roomSelect : action.payload.roomId
