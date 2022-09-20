@@ -1,4 +1,26 @@
 import { v4 as uuidv4 } from 'uuid';
+//import * as sharedTypes from "@lib/sharedTypes/chatRoom";
+
+export interface IMessage {
+    uuid : string;
+    username : string;
+    message : string;
+    time : Date;
+}
+  
+  // i message function
+  
+export interface IRoom {
+    roomName : string;
+    messageList : IMessage[]
+}
+
+const makeEmptyIRoom = (roomName : string) : IRoom => {
+    return ({
+        roomName : roomName,
+        messageList : []
+    });
+}
 
 type TActionType = 'ADD_ROOM' | 'SET_ROOM_SELECT' | 'ADD_MSG';
 
@@ -38,7 +60,7 @@ export const recordActionRoomList: Record<TActionType, string> = {
 }
 
 export interface IState {
-    roomList : string[];
+    roomList : IRoom[];//string[];
     roomSelect : number;
 }
 
@@ -47,7 +69,7 @@ export interface IStateWtDispatch extends IState{
 }
 
 export const makeEmptyRoom = () : IState => ({
-    roomList : ["coucou", 'john', 'jack'],
+    roomList : [makeEmptyIRoom("general"), makeEmptyIRoom("cat"), makeEmptyIRoom("chirac")],
     roomSelect : 1
 });
 
@@ -57,7 +79,7 @@ export const roomListReducer = (state : IState, action : IActionReducer) : IStat
             console.log("WTF")
             return {
                 ...state,
-                roomList : [...state.roomList, action.payload.roomName]
+                roomList : [...state.roomList, makeEmptyIRoom(action.payload.roomName)]
             }
         }
         case E_ACTION.SET_ROOM_SELECT: {

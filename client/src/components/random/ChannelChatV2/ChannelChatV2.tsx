@@ -1,9 +1,12 @@
 import React, { ReactElement, useState, useEffect, useRef } from 'react'
 import { v4 as uuidv4 } from 'uuid';
-import {TAction} from "@lib/sharedTypes/chatRoom.d";
+//import {TAction} from "@lib/sharedTypes/chatRoom.d";
 const socket = new WebSocket('ws://localhost:9002');
 
 interface Props {}
+
+type TAction = 'msg' | 'file' | 'audio' | 'video' | 'join' | 'leave';
+
 
 interface IMsgElem {
     id: string;

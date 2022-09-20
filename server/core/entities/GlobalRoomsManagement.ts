@@ -2,13 +2,42 @@
 import * as types from "./types";
 import Room from "./Room";
 
+// link socket io service inside for base socket io function
+// so link ws
 class GlobalRoomsManagement {
     private _roomList : Room[];
   
     constructor() {
       this._roomList = [];
     }
-  
+
+    // CORE FUNCTION
+    userJoinRoom(data : any) : boolean {
+      // join room
+      console.log("join : ", data.roomName);
+    
+      // create room if unknown
+      if (!this.isRoomExistWtName(data.roomName)) {
+        console.log("Room creation : ", data.roomName);
+        this.createRoom(data.roomName);
+      }
+      return false;
+    }
+
+    userSendMsg() : boolean {
+      return false;
+    }
+
+    userLeaveRoom() : boolean{
+      return false;
+    }
+
+    userCreateRoom() : boolean{
+      return false;
+    }
+    //
+
+    // OTHER UTILITY FUNCTION
     getRoomIndex(uuid : string) {
       let room = this._roomList.findIndex(room => room.uuid === uuid);
       return room;

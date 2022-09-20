@@ -75,7 +75,7 @@ function MainRoomList() {
                     type: E_ACTION.SET_ROOM_SELECT,
                     payload: { roomId: id }
                 })}
-                nameList={roomList} />
+                nameList={roomList.map(e => e.roomName)} />
             <ChannelChatV2 />
         </div>
     )
