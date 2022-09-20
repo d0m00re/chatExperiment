@@ -4,6 +4,23 @@ import Room from "./Room";
 
 // link socket io service inside for base socket io function
 // so link ws
+
+interface IUserJoinRoom {
+  roomName : string;
+}
+
+interface IUserSendMsg {
+
+}
+
+interface IUserLeaveRoom {
+
+}
+
+interface IUserCreateRoom {
+
+}
+
 class GlobalRoomsManagement {
     private _roomList : Room[];
   
@@ -12,7 +29,7 @@ class GlobalRoomsManagement {
     }
 
     // CORE FUNCTION
-    userJoinRoom(data : any) : boolean {
+    userJoinRoom(data : IUserJoinRoom) : boolean {
       // join room
       console.log("join : ", data.roomName);
     
@@ -24,15 +41,15 @@ class GlobalRoomsManagement {
       return true;
     }
 
-    userSendMsg() : boolean {
+    userSendMsg(data : IUserSendMsg) : boolean {
       return false;
     }
 
-    userLeaveRoom() : boolean{
+    userLeaveRoom(data : IUserLeaveRoom) : boolean{
       return false;
     }
 
-    userCreateRoom() : boolean{
+    userCreateRoom(data : IUserCreateRoom) : boolean{
       return false;
     }
     //
