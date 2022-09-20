@@ -21,7 +21,7 @@ class GlobalRoomsManagement {
         console.log("Room creation : ", data.roomName);
         this.createRoom(data.roomName);
       }
-      return false;
+      return true;
     }
 
     userSendMsg() : boolean {
