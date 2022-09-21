@@ -61,8 +61,17 @@ class GlobalRoomsManagement {
     }
 
     getRoomIndexWtName(name : string) {
-        let room = this._roomList.findIndex(room => room.roomName === name);
-      return room;
+      console.log("find room : ", name)
+        let roomIndex = this._roomList.findIndex(room => room.roomName === name);
+        console.log("room find : ", roomIndex)
+        return roomIndex;
+    }
+
+    getRoomWtName(name : string) {
+      let index = this.getRoomIndexWtName(name);
+
+      if (index === -1) return undefined;
+      return this._roomList[index];
     }
   
     room(uuid : string) {
@@ -99,6 +108,7 @@ class GlobalRoomsManagement {
             username : username,
             message : msg,
         });
+        console.log(this._roomList[indexRoom]);
     }
 
     getAllRoom() {

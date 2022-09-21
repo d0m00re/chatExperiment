@@ -30,15 +30,18 @@ const socketOnMessage = (globalRoomManagement : GlobalRoomsManagement, ws : uws.
     switch (data.typeObj) {
       case 'join':
         globalRoomManagement.userJoinRoom(data);
+        let dataReturn = globalRoomManagement.getRoomWtName(data.roomName)
         ws.subscribe(data.roomName);
+        // send back socket data
+        ws.send(JSON.stringify({action : "roomHistory", ...dataReturn}));
         break;
       case 'leave':
         console.log("leave : ", data.roomName)
-        globalRoomManagement.userLeaveRoom();
+        globalRoomManagement.userLeaveRoom({});
         ws.unsubscribe(data.roomName);
         break;
       case 'msg':
-        globalRoomManagement.userSendMsg();
+        globalRoomManagement.userSendMsg({});
 
         // send back msg
         console.log("msg : ", data.username, " -: ", data.roomName, ' -> data.msg', data.msg);
@@ -46,7 +49,7 @@ const socketOnMessage = (globalRoomManagement : GlobalRoomsManagement, ws : uws.
         // add msg to room
         globalRoomManagement.addMsgToRoom(data.roomName, data.msg, data.username);
     
-        ws.publish("room1", JSON.stringify(data), false);
+        ws.publish("room1", JSON.stringify({action : 'msg', ...data}), false);
         break;
     }
 }

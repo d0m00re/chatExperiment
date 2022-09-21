@@ -3,10 +3,24 @@ import { v4 as uuidv4 } from 'uuid';
 //import {TAction} from "@lib/sharedTypes/chatRoom.d";
 const socket = new WebSocket('ws://localhost:9002');
 
-interface Props {}
+interface Props { }
 
-type TAction = 'msg' | 'file' | 'audio' | 'video' | 'join' | 'leave';
+type TAction = 'msg' | 'file' | 'audio' | 'video' | 'join' | 'leave' | 'roomHistory';
 
+// room history data
+
+interface IHistoryMsg {
+    message : string;
+    time : string;
+    username : string;
+    uuid : string;
+}
+
+interface IHistoryMsgElem {
+    action : TAction;
+    messageList : IHistoryMsg[]
+}
+//
 
 interface IMsgElem {
     id: string;
@@ -33,8 +47,8 @@ function MinimalChat({ }: Props): ReactElement {
     const [msg, setMsg] = useState('');
     const [userInfo, setUserInfo] = useState(
         {
-            username : 'jack lapiquette',
-            roomName : 'room1'
+            username: 'jack lapiquette',
+            roomName: 'room1'
         });
 
     const [msgList, setMsgList] = useState<IMsgElem[]>([])
@@ -48,8 +62,8 @@ function MinimalChat({ }: Props): ReactElement {
             setInfo(old => ({ online: true }))
 
             socket.send(JSON.stringify({
-                typeObj : 'join',
-                roomName : 'room1'
+                typeObj: 'join',
+                roomName: 'room1'
             }))
         };
 
@@ -64,30 +78,57 @@ function MinimalChat({ }: Props): ReactElement {
             let msg = message.data;
 
             msg = JSON.parse(msg);
-           // console.log("Data : ", msg)
-            setMsgList(old => ([
-                ...old,
-                makeMsgElem({objData : msg.msg, typeObj: 'msg'})
-            ]))
+            console.log("Data : ", msg)
+            console.log(msg.action)
+            //roomHistory
+            switch (msg.action) {
+                case 'roomHistory': {
+                    let msgList : IHistoryMsgElem = msg;//JSON.parse(msg);
+                    let parseData : IMsgElem[] = msgList.messageList.map(elem => ({typeObj : 'msg', id : elem.uuid, objData : elem.message}))
+                    
+                    console.log("INJECT HISTORY")
+                    console.log([
+                        ...parseData
+                    ])
+
+                    setMsgList(old => ([
+                        ...old,
+                        ...parseData
+                    ]))
+                    
+                    break;
+                }
+                case 'msg': {
+                    console.log("Msg : ", msg)
+                    console.log(makeMsgElem({ objData: msg.msg, typeObj: 'msg' }));
+                    console.log("----")
+                    setMsgList(old => ([
+                        ...old,
+                        makeMsgElem({ objData: msg.msg, typeObj: 'msg' })
+                    ]))
+                    break;
+                }
+            }
+
 
         }
-        }, []);
+    }, []);
 
-    const sendMsg = (e : any) => {
+    const sendMsg = (e: any) => {
         e.preventDefault();
         console.log("send msg : ")
         setMsgList(old => ([...old, makeMsgElem({ objData: msg, typeObj: 'msg' })]));
         socket.send(JSON.stringify({
-            msg : msg,
+            msg: msg,
             typeObj: 'msg',
-            username : userInfo.username,
-            roomName : userInfo.roomName 
+            username: userInfo.username,
+            roomName: userInfo.roomName
         }));
         console.log(socket)
     }
 
     useEffect(() => {
-        bottomRef.current?.scrollIntoView({behavior: 'smooth'});
+        bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [msgList])
 
     return (
@@ -98,12 +139,12 @@ function MinimalChat({ }: Props): ReactElement {
             <input
                 type="text"
                 value={userInfo.username}
-                onChange={(e) => setUserInfo(old => ({...old, username : e.target.value}))}
+                onChange={(e) => setUserInfo(old => ({ ...old, username: e.target.value }))}
             />
             <input
                 type="text"
                 value={userInfo.roomName}
-                onChange={(e) => setUserInfo(old => ({...old, roomName : e.target.value}))}
+                onChange={(e) => setUserInfo(old => ({ ...old, roomName: e.target.value }))}
             />
             <form>
                 <section className="flexColumn cardChat overflowY breakAll">
