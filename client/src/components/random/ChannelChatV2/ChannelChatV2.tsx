@@ -78,18 +78,11 @@ function MinimalChat({ }: Props): ReactElement {
             let msg = message.data;
 
             msg = JSON.parse(msg);
-            console.log("Data : ", msg)
-            console.log(msg.action)
             //roomHistory
             switch (msg.action) {
                 case 'roomHistory': {
                     let msgList : IHistoryMsgElem = msg;//JSON.parse(msg);
                     let parseData : IMsgElem[] = msgList.messageList.map(elem => ({typeObj : 'msg', id : elem.uuid, objData : elem.message}))
-                    
-                    console.log("INJECT HISTORY")
-                    console.log([
-                        ...parseData
-                    ])
 
                     setMsgList(old => ([
                         ...old,

@@ -32,7 +32,15 @@ const makeMsgElem = (props: IMakeMsgElem): IMsgElem => {
 function ChannelChatV3({ }: Props): ReactElement {
     const bottomRef = useRef<any>(null);
     const [msg, setMsg] = useState("");
-    const {socket, setMsgList, userInfo, msgList, setUserInfo, info} = useChatRoomSocket({url : 'ws://localhost:9002'});
+    const {socket,
+           setMsgList,
+           userInfo,
+           msgList,
+           setUserInfo,
+
+           roomList,
+           roomSelect,
+           info} = useChatRoomSocket({url : 'ws://localhost:9002'});
 
     const sendMsg = (e: any) => {
         e.preventDefault();
@@ -42,7 +50,7 @@ function ChannelChatV3({ }: Props): ReactElement {
             msg: msg,
             typeObj: 'msg',
             username: userInfo.username,
-            roomName: userInfo.roomName
+            roomName: roomList[roomSelect].roomName//userInfo.roomName
         }));
         console.log(socket)
     }
@@ -50,6 +58,9 @@ function ChannelChatV3({ }: Props): ReactElement {
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [msgList])
+
+    console.log("room list : ")
+    console.log(roomList)
 
     return (
         <section className="flexColumn">
@@ -68,8 +79,8 @@ function ChannelChatV3({ }: Props): ReactElement {
             />
             <form>
                 <section className="flexColumn cardChat overflowY breakAll">
-                    {
-                        msgList.map(e => <div className="w800">{e.objData}</div>)
+                    {(roomList && roomList.length > roomSelect) &&
+                        roomList[roomSelect].messageList.map(e => <div className="w800">{e.message}</div>)
                     }
                     <div ref={bottomRef} />
                 </section>

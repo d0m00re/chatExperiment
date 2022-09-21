@@ -70,6 +70,9 @@ class GlobalRoomsManagement {
     getRoomWtName(name : string) {
       let index = this.getRoomIndexWtName(name);
 
+      console.log("ROOM LIST")
+      console.log(this._roomList)
+
       if (index === -1) return undefined;
       return this._roomList[index];
     }

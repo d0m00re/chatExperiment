@@ -26,7 +26,7 @@ function MainRoomList() {
     }
 
     useEffectOnce(() => {
-            populate();
+         //   populate();
     });
 
     return (
