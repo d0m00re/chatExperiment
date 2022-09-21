@@ -109,8 +109,6 @@ function MinimalChat({ }: Props): ReactElement {
                     break;
                 }
             }
-
-
         }
     }, []);
 

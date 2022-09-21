@@ -1,5 +1,5 @@
 import React, { ReactElement, useContext, useEffect,  useState, useRef } from 'react'
-import ChannelChatV2 from "./../../random/ChannelChatV2";
+import ChannelChatV3 from "./../../random/ChannelChatV3";
 import NavBar from "./../../templates/NavBar";
 
 import RoomListProvider, { RoomListContext } from "./../../provider/RoomListProvider/RoomListProvider";
@@ -41,7 +41,9 @@ function MainRoomList() {
                     payload: { roomId: id }
                 })}
                 nameList={roomList.map(e => e.roomName)} />
-            <ChannelChatV2 />
+            <ChannelChatV3
+
+            />
         </div>
     )
 }
