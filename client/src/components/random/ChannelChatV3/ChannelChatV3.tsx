@@ -72,7 +72,7 @@ function ChannelChatV3({ }: Props): ReactElement {
             <form>
                 <section className="flexColumn cardChat overflowY breakAll">
                     {(roomList && roomSelect > -1 && roomList[roomSelect] && roomList.length > roomSelect) &&
-                        roomList[roomSelect].messageList.map(e => <div className="w800">{e.message}</div>)
+                        roomList[roomSelect].messageList.map(e => <div className="w800">{e.username} : {e.message}</div>)
                     }
                     <div ref={bottomRef} />
                 </section>

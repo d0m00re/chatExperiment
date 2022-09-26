@@ -111,6 +111,7 @@ export const roomListReducer = (state : IState, action : IActionReducer) : IStat
     switch (action.type) {
         case E_ACTION.HELLO_WOLRD: {
             console.log("Hello world");
+            console.log(state)
             return state;
         }
 
