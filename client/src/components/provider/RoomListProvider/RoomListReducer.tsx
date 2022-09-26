@@ -26,7 +26,8 @@ const makeEmptyIRoom = (roomName : string) : IRoom => {
     });
 }
 
-type TActionType = 'ADD_ROOM' |
+type TActionType =  'HELLO_WOLRD' |
+                    'ADD_ROOM' |
                     'SET_ROOM_SELECT' |
                     'ADD_MSG' |
                     'SET_ROOM_LIST' |
@@ -34,6 +35,8 @@ type TActionType = 'ADD_ROOM' |
                     'ADD_ONE_MSG_TO_ROOM';
 
 // action
+
+export interface IHelloWorld {};
 export interface IAddRoom {roomName : string};
 export interface IAddMessageToRoom {props : IMessage};
 
@@ -59,6 +62,7 @@ interface IAddOneMsgToRoom {
 export interface IAddOneToRoom {room : IAddOneMsgToRoom};
 
 export enum E_ACTION {
+    HELLO_WOLRD = "HELLO_WORLD",
     ADD_ROOM = "ADD_ROOM",
     SET_ROOM_SELECT = "SET_ROOM_SELECT",
     ADD_MSG = "ADD_MSG",
@@ -67,8 +71,9 @@ export enum E_ACTION {
     ADD_ONE_MSG_TO_ROOM = "ADD_ONE_MSG_TO_ROOM"
 }
 
-export type IActionReducer = 
-    {type : E_ACTION.ADD_ROOM, payload : IAddRoom}
+export type IActionReducer =
+    {type : E_ACTION.HELLO_WOLRD, payload : null}
+    | {type : E_ACTION.ADD_ROOM, payload : IAddRoom}
     | {type : E_ACTION.SET_ROOM_SELECT, payload : ISetRoomSelect}
     | {type : E_ACTION.ADD_MSG, payload : IAddMsg}
     | {type : E_ACTION.SET_ROOM_LIST, payload : ISetRoomList}
@@ -77,6 +82,7 @@ export type IActionReducer =
 
     //ADD_MSG_LIST_TO_ROOM
 export const recordActionRoomList: Record<TActionType, string> = {
+    HELLO_WOLRD : "HELLO_WORLD",
     ADD_ROOM: "ADD_ROOM",
     ADD_MSG_TO_ROOM: "ADD_MSG_TO_ROOM",
     SET_ROOM_SELECT: "SET_ROOM_SELECT",
@@ -103,6 +109,11 @@ export const roomListReducer = (state : IState, action : IActionReducer) : IStat
     console.log("=== ACTION ===")
     console.log(action)
     switch (action.type) {
+        case E_ACTION.HELLO_WOLRD: {
+            console.log("Hello world");
+            return state;
+        }
+
         case E_ACTION.ADD_ROOM: {
             console.log("* reducer : ADD_ROOM")
             return {

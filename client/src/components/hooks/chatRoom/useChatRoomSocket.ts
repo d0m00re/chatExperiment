@@ -83,8 +83,8 @@ function useChatRoomSocket(props: Props) {
 
                         //let parseData: IMsgElem[] = msgList.messageList.map(elem => ({ typeObj: 'msg', id: elem.uuid, objData: elem.message }))
                         // j ai pas eu derreur car not ppass by action function
-                        if (dispatch)
-                           dispatch({type : E_ACTION.ADD_MSG_TO_ROOM, payload : msg.messageList});
+                     //   if (dispatch)
+                     //      dispatch({type : E_ACTION.ADD_MSG_TO_ROOM, payload : msg.messageList});
                         break;
                     }
                     case 'msg': {
@@ -94,7 +94,7 @@ function useChatRoomSocket(props: Props) {
                             username : msg.username,
                             roomName : msg.roomName
                         }
-                         if (dispatch)
+                         if (!!dispatch)
                          {
                              console.log("dispatch : ADD_ONE_MSG_TO_ROOM", payload)
                              console.log("pourquoi tu trigger deux fois l mupdate fdp")

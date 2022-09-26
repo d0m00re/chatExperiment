@@ -1,7 +1,7 @@
 import { ReactElement, useContext } from 'react'
 import ChannelChatV3 from "./../../random/ChannelChatV3";
 import NavBar from "./../../templates/NavBar";
-
+ 
 import RoomListProvider, { RoomListContext } from "./../../provider/RoomListProvider/RoomListProvider";
 import { E_ACTION } from "./../../provider/RoomListProvider/RoomListReducer";
 
@@ -17,6 +17,9 @@ function MainRoomList() {
                 <p style={{ color: "red" }}> room select : {roomSelect}</p>
             </section>
             <section className="flexRow">
+            <button onClick={() => {dispatch({
+                type : E_ACTION.HELLO_WOLRD, payload : null
+            })}}>hello world</button>
             <NavBar
                 selectID={roomSelect}
                 //  select room
