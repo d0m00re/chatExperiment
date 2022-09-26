@@ -17,8 +17,6 @@ globalRoomManagement.createRoom("react")
 globalRoomManagement.createRoom("nodejs")
 globalRoomManagement.createRoom("ux-ui")
 
-
-
 //
 
 function setCorsHeaders(response : any) {
@@ -28,8 +26,6 @@ function setCorsHeaders(response : any) {
   response.writeHeader("Access-Control-Allow-Headers", "origin, content-type, accept, x-requested-with");
   response.writeHeader("Access-Control-Max-Age", "3600");
 }
-
-console.log(uws)
 
 uws
   .App()
@@ -49,19 +45,16 @@ uws
       .end(JSON.stringify(getAllRoomList));
   })
   .get('/roomHistory', (res : HttpResponse, req : HttpRequest) => {
+    console.log("/roomHistory")
     setCorsHeaders(res);
-    let roomname = req.getQuery('roomname');
-    let room = globalRoomManagement.getRoomWtName(roomname);
+    let roomName = req.getQuery('roomName');
+    let room = globalRoomManagement.getRoomWtName(roomName);
     // if nothing found
-    console.log("ROOM : ")
-    console.log(room)
-    if (roomname.length === 0 || !room) {
+    if (roomName.length === 0 || !room) {
       return res.writeStatus('400')
       .writeHeader('IsExample', 'Yes')
       .end('toom history test');
     }
-    //console.log(res.getQuery())
-
     // retrieve room history 
     // todo : last 20 messages pagination
     //let room = globalRoomManagement.getRoomWtName("");
@@ -93,5 +86,4 @@ uws
     if (listenSocket) {
       console.log('Listening to port 9002');
     }
-
   });

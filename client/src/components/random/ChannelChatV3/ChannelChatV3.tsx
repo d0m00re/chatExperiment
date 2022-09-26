@@ -2,10 +2,6 @@ import React, { ReactElement, useState, useEffect, useRef } from 'react'
 import { v4 as uuidv4 } from 'uuid';
 import useChatRoomSocket from "./../../hooks/chatRoom/useChatRoomSocket";
 
-//import {TAction} from "@lib/sharedTypes/chatRoom.d";
-//const socket = new WebSocket('ws://localhost:9002');
-//
-
 interface Props { }
 
 type TAction = 'msg' | 'file' | 'audio' | 'video' | 'join' | 'leave' | 'roomHistory';
@@ -44,7 +40,6 @@ function ChannelChatV3({ }: Props): ReactElement {
 
     const sendMsg = (e: any) => {
         e.preventDefault();
-        console.log("send msg : ")
         setMsgList(old => ([...old, makeMsgElem({ objData: msg, typeObj: 'msg' })]));
         socket?.send(JSON.stringify({
             msg: msg,
@@ -52,15 +47,12 @@ function ChannelChatV3({ }: Props): ReactElement {
             username: userInfo.username,
             roomName: roomList[roomSelect].roomName//userInfo.roomName
         }));
-        console.log(socket)
     }
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [msgList])
 
-    console.log("room list : ")
-    console.log(roomList)
 
     return (
         <section className="flexColumn">
@@ -79,7 +71,7 @@ function ChannelChatV3({ }: Props): ReactElement {
             />
             <form>
                 <section className="flexColumn cardChat overflowY breakAll">
-                    {(roomList && roomList.length > roomSelect) &&
+                    {(roomList && roomSelect > -1 && roomList[roomSelect] && roomList.length > roomSelect) &&
                         roomList[roomSelect].messageList.map(e => <div className="w800">{e.message}</div>)
                     }
                     <div ref={bottomRef} />

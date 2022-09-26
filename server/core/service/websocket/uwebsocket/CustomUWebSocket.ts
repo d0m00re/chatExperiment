@@ -3,17 +3,17 @@ import uws from 'uWebSockets.js';
 export type UwsWebsocket = uws.WebSocket
 
 interface ISendMsgToRoom {
-    roomname : string;
+    roomName : string;
     msg : string;
     isBinary : string;
 }
 
 interface IJoinRoom {
-    roomname : string
+    roomName : string
 }
 
 interface ILeaveRoom {
-    roomname : string
+    roomName : string
 }
 
 class CustomUWebSocket {
@@ -27,15 +27,15 @@ class CustomUWebSocket {
     set client(client : UwsWebsocket) {this._client = client}
 
     joinRoom(props : IJoinRoom) {
-        this._client.subscribe(props.roomname);
+        this._client.subscribe(props.roomName);
     }
 
     sendMsgToRoom(props : ISendMsgToRoom) {
-        this._client.publish(props.roomname, props.msg, false);
+        this._client.publish(props.roomName, props.msg, false);
     }
 
     leaveRoom(props : ILeaveRoom) {
-        this._client.unsubscribe(props.roomname);
+        this._client.unsubscribe(props.roomName);
 
     }
 }

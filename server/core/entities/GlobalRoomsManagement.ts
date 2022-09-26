@@ -31,11 +31,9 @@ class GlobalRoomsManagement {
     // CORE FUNCTION
     userJoinRoom(data : IUserJoinRoom) : boolean {
       // join room
-      console.log("join : ", data.roomName);
     
       // create room if unknown
       if (!this.isRoomExistWtName(data.roomName)) {
-        console.log("Room creation : ", data.roomName);
         this.createRoom(data.roomName);
       }
       return true;
@@ -61,17 +59,12 @@ class GlobalRoomsManagement {
     }
 
     getRoomIndexWtName(name : string) {
-      console.log("find room : ", name)
         let roomIndex = this._roomList.findIndex(room => room.roomName === name);
-        console.log("room find : ", roomIndex)
         return roomIndex;
     }
 
     getRoomWtName(name : string) {
       let index = this.getRoomIndexWtName(name);
-
-      console.log("ROOM LIST")
-      console.log(this._roomList)
 
       if (index === -1) return undefined;
       return this._roomList[index];
@@ -105,13 +98,11 @@ class GlobalRoomsManagement {
     }
 
     addMsgToRoom(roomName : string, msg : string, username : string) {
-        console.log("Add msg to room")
         let indexRoom = this.getRoomIndexWtName(roomName);
         this._roomList[indexRoom].pushMessage({
             username : username,
             message : msg,
         });
-        console.log(this._roomList[indexRoom]);
     }
 
     getAllRoom() {

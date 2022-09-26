@@ -1,10 +1,9 @@
-import React, { ReactElement, useContext, useEffect,  useState, useRef } from 'react'
+import { ReactElement, useContext } from 'react'
 import ChannelChatV3 from "./../../random/ChannelChatV3";
 import NavBar from "./../../templates/NavBar";
 
 import RoomListProvider, { RoomListContext } from "./../../provider/RoomListProvider/RoomListProvider";
 import { E_ACTION } from "./../../provider/RoomListProvider/RoomListReducer";
-import useEffectOnce from "./../../hooks/useEffectOnce";
 
 function MainRoomList() {
     const {
@@ -12,39 +11,23 @@ function MainRoomList() {
         roomSelect,
         dispatch,
     } = useContext(RoomListContext)
-
-    /*
-    ** populate rooms
-    */
-    const populate = () => {
-        console.log('populate')
-        if (!dispatch) return;
-        dispatch({
-            type: E_ACTION.ADD_ROOM,
-            payload: { roomName: 'Ripper' }
-        });
-    }
-
-    useEffectOnce(() => {
-         //   populate();
-    });
-
     return (
-        <div className="flexRow">
-            <p style={{ color: "red" }}> room select : {roomSelect}</p>
-            <p style={{ color: "red" }}> {dispatch ? "exist" : "dont"}</p>
-
+        <main>
+            <section>
+                <p style={{ color: "red" }}> room select : {roomSelect}</p>
+            </section>
+            <section className="flexRow">
             <NavBar
                 selectID={roomSelect}
+                //  select room
                 setSelectID={(id: number) => dispatch && dispatch({
                     type: E_ACTION.SET_ROOM_SELECT,
                     payload: { roomId: id }
                 })}
                 nameList={roomList.map(e => e.roomName)} />
-            <ChannelChatV3
-
-            />
-        </div>
+            <ChannelChatV3 />
+        </section>
+        </main>
     )
 }
 

@@ -1,27 +1,18 @@
 import React, { ReactElement, useEffect, useContext, useState } from 'react'
 import useEffectOnce from './../../hooks/useEffectOnce';
-import RoomListProvider, { RoomListContext } from "./../../provider/RoomListProvider/RoomListProvider";
+import { RoomListContext } from "./../../provider/RoomListProvider/RoomListProvider";
 import {IActionReducer, E_ACTION} from './../../provider/RoomListProvider/RoomListReducer';
 import { v4 as uuidv4 } from 'uuid';
 import axios from "axios";
-//
 
 type TAction = 'msg' | 'file' | 'audio' | 'video' | 'join' | 'leave' | 'roomHistory';
 
-// room history data
 
-interface IHistoryMsg {
-    message: string;
-    time: string;
-    username: string;
-    uuid: string;
+interface IGetOutputRoomElem {
+    roomName: string,
+    uuid: string,
+    messageList: any[] // todo rework
 }
-
-interface IHistoryMsgElem {
-    action: TAction;
-    messageList: IHistoryMsg[]
-}
-//
 
 interface IMsgElem {
     id: string;
@@ -32,19 +23,6 @@ interface IMsgElem {
 
 interface Props {
     url: string;
-}
-
-interface IMakeMsgElem {
-    objData: string;
-    typeObj: TAction;
-}
-
-const makeMsgElem = (props: IMakeMsgElem): IMsgElem => {
-    return {
-        id: uuidv4(),
-        objData: props.objData,
-        typeObj: props.typeObj
-    };
 }
 
 //'ws://localhost:9002'
@@ -60,64 +38,70 @@ function useChatRoomSocket(props: Props) {
     const [msgList, setMsgList] = useState<IMsgElem[]>([])
     const { roomList, roomSelect, dispatch } = useContext(RoomListContext)
 
+    // init- populate
     useEffectOnce(() => {
+        console.log("useChatRoomSocket :  useEffectOnce")
         const _socket = new WebSocket('ws://localhost:9002');
         setSocket(_socket);
 
         // socket operation
         _socket.onopen = () => {
             // now we are connected
-            console.log("connection open")
+            getRoomList(dispatch)
 
-            //
-            let _roomList = getRoomList(dispatch)
-
-            //socket.send('some text') // send some text to server
             setInfo(old => ({ online: true }))
-
-            /*
-            _socket.send(JSON.stringify({
-                typeObj: 'join',
-                roomName: 'room1'
-            }))
-            */
 
             _socket.onclose = () => {
                 // now we are connected
-                console.log("connection close")
+                console.log("socket.onclose")
                 setInfo(old => ({ online: true }))
             };
 
             _socket.onmessage = (message) => {
-                console.log("Message receive : ", message)
+                console.log("!!!!! socket.onmessage")
                 let msg = message.data;
 
                 msg = JSON.parse(msg);
+
                 //roomHistory
+                interface ITmpElem {
+                    message : string;
+                    time : string;
+                    username : string;
+                    uuid : string;
+                }
+                interface ITmpMsgListReceive {
+                    action : string;
+                    messageList : ITmpElem[];
+                }
+
                 switch (msg.action) {
+                
                     case 'roomHistory': {
-                        console.log("useChatroomSocket roomHistory: ")
-                        let msgList: IHistoryMsgElem = msg;//JSON.parse(msg);
-                        let parseData: IMsgElem[] = msgList.messageList.map(elem => ({ typeObj: 'msg', id: elem.uuid, objData: elem.message }))
+                        console.log("useChatSocket : roomHistory")
+                        let tmpRemoveThisSheetLater : ITmpMsgListReceive = msg;
+
+                        //let parseData: IMsgElem[] = msgList.messageList.map(elem => ({ typeObj: 'msg', id: elem.uuid, objData: elem.message }))
+                        // j ai pas eu derreur car not ppass by action function
                         if (dispatch)
-                            dispatch({type : E_ACTION.ADD_MSG_TO_ROOM, payload : msg});
-
-                        setMsgList(old => ([
-                            ...old,
-                            ...parseData
-                        ]))
-
+                           dispatch({type : E_ACTION.ADD_MSG_TO_ROOM, payload : msg.messageList});
                         break;
                     }
                     case 'msg': {
-                        console.log("useChatroomSocket msg: ")
+                        console.log("useChatSocket : msg: ")                        
+                        const payload = {
+                            msg : msg.msg,
+                            username : msg.username,
+                            roomName : msg.roomName
+                        }
                          if (dispatch)
-                            dispatch({type : E_ACTION.ADD_MSG_TO_ROOM, payload : msg});
-                      //  setMsgList(old => ([
-                      //      ...old,
-                      //      makeMsgElem({ objData: msg.msg, typeObj: 'msg' })
-                      //  ]))
-                        break;
+                         {
+                             console.log("dispatch : ADD_ONE_MSG_TO_ROOM", payload)
+                             console.log("pourquoi tu trigger deux fois l mupdate fdp")
+                             // wtf call 2 times 
+                             dispatch({type : E_ACTION.ADD_ONE_MSG_TO_ROOM, payload : payload});
+                         }
+                         break;
                     }
                 }
             }
@@ -126,11 +110,11 @@ function useChatRoomSocket(props: Props) {
     })
 
     // update room message
-    const getHistoryRoom = (roomname: string) => {
-        console.log("History room : ", roomname);
-        axios.get(`http://localhost:9002/roomHistory?roomname=${roomname}`)
+    const getHistoryRoom = (roomName: string) => {
+        console.log("History room : ", roomName);
+        axios.get(`http://localhost:9002/roomHistory?roomName=${roomName}`)
             .then(resp => {
-                console.log("server response")
+                console.log(" response")
                 console.log(resp)
             })
             .catch(err => {
@@ -140,12 +124,11 @@ function useChatRoomSocket(props: Props) {
 
     const getRoomList = (dispatch : React.Dispatch<IActionReducer> | undefined) => {
         axios.get(`http://localhost:9002/roomList`)
-            .then(resp => {
-                console.log("roomlist : server resp")
-                console.log(resp.data)
-                console.log(typeof(resp.data))
+            .then((resp) => {
+                let data : IGetOutputRoomElem[] = resp.data;
+                console.log("dispatch : ", data)
                 if (dispatch)
-                    dispatch({type : E_ACTION.SET_ROOM_LIST, payload : {rooms : resp.data}})
+                    dispatch({type : E_ACTION.SET_ROOM_LIST, payload : {rooms : data}})
             })
             .catch(err => {
                 console.log("error request : ", err)
@@ -153,8 +136,20 @@ function useChatRoomSocket(props: Props) {
     }
 
     useEffect(() => {
-        let roomname = roomList[roomSelect];
-        getHistoryRoom(roomname.roomName);
+        let room = roomList[roomSelect];
+
+        if (room)
+        {
+            getHistoryRoom(room.roomName);
+            socket &&
+            socket.send(JSON.stringify({
+                typeObj: 'join',
+                roomName: room.roomName//'room1'
+            }))
+        }
+        else {
+            console.error("room not found : " , roomSelect)
+        }
     }, [roomSelect])
 
     return {

@@ -12,7 +12,7 @@ function arrayBufferToString(buffer: ArrayBuffer) {
 
 function arrayBufferToJSon(buffer: ArrayBuffer) {
     let str = arrayBufferToString(buffer);
-    console.log(str)
+   // console.log(str)
     return (str)
   }
 
@@ -20,16 +20,11 @@ function arrayBufferToJSon(buffer: ArrayBuffer) {
 const socketOnMessage = (globalRoomManagement : GlobalRoomsManagement, ws : uws.WebSocket, message : ArrayBuffer) => {
     /* Ok is false if backpressure was built up, wait for drain */
     console.log("websocket - onMessage")
-    console.log("message receive", message)
-    console.log(arrayBufferToJSon(message))
-    
-    //console.log(message.toString())
-    ///let ok = ws.send(message, isBinary);
     let data: types.IMsg = JSON.parse(arrayBufferToJSon(message));
-    
+
     switch (data.typeObj) {
       case 'join':
-        console.log('An user join : ' +data.roomName )
+        console.log(`[${data.roomName}] : join : ${data.username}`)
         globalRoomManagement.userJoinRoom(data);
         let dataReturn = globalRoomManagement.getRoomWtName(data.roomName)
         ws.subscribe(data.roomName);
@@ -42,16 +37,14 @@ const socketOnMessage = (globalRoomManagement : GlobalRoomsManagement, ws : uws.
         ws.unsubscribe(data.roomName);
         break;
       case 'msg':
+        console.log("msg : ")
         globalRoomManagement.userSendMsg({});
-
-        // send back msg
-        console.log("msg : ", data.username, " -: ", data.roomName, ' -> data.msg', data.msg);
-        //ws.send(JSON.stringify(data), false);
         // add msg to room
         globalRoomManagement.addMsgToRoom(data.roomName, data.msg, data.username);
         // send back to client with uuid
         ws.send(JSON.stringify({action : 'msg', ...data}), false);
         // send back to all other client who subscribe in this room
+        console.log(`[${data.roomName}] - emit msg - ${JSON.stringify({action : 'msg', ...data})}`)
         ws.publish(data.roomName, JSON.stringify({action : 'msg', ...data}), false);
         break;
     }
