@@ -1,11 +1,40 @@
 import './App.css';
 import PageRoomList from './components/pages/RoomList';
 
-function App() {
+import * as AuthPage from './components/pages/Auth';
 
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom";
+import "./index.css";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <AuthPage.Navbar />,
+    children: [
+      {
+        path: 'login',
+        element: <AuthPage.Login />
+      },
+      {
+        path: "register",
+        element: <AuthPage.Register />,
+      },
+      {
+        path: "forgotPassword",
+        element: <AuthPage.RecoverPassword />,
+      }
+    ]
+  }
+]);
+
+function App() {
   return (
     <div className="App flexRow">
-        <PageRoomList />
+      <RouterProvider router={router} />
+      {/*<PageRoomList /> */}
     </div>
   )
 }
