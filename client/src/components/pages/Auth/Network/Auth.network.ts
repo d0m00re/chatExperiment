@@ -1,6 +1,6 @@
 import GenNetworkAdapter from "./GenNetworkAdapter";
 
-const C_URL = `http://localhost:4242/api`;
+const C_URL = `http://localhost:4242/api/auth`;
 
 /*
 login : 
@@ -15,17 +15,27 @@ interface IRegisterInput {
     email : string;
     password : string;
     confirmPassword : string;
+    last_name : string;
+    first_name : string;
 }
 
 interface IForgotPasswordInput {
     email : string;
 }
 
+interface ILoginOutput {
+    email : string;
+    first_name : string;
+    last_name : string;
+}
+
 interface ILogoutInput {};
-interface IMeInput {};
+interface IMeInput {
+    token : string;
+};
 class AuthNetwork {
     // login
-    login(props : ILoginInput) {
+    login(props : ILoginInput) : Promise<{data : ILoginOutput}> {
         const url = `${C_URL}/login`;
         return GenNetworkAdapter.post(url, props);
     }
