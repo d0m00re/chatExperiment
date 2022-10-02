@@ -19,6 +19,8 @@ const login = async (req : Request, res : Response) => {
 
     if (await bcrypt.compare(password, user.password ?? '')) {
         // Create token
+        console.log("generate token : ");
+        console.log({id: user._id,email})
         const token = jwt.jwtSign({
           id: user._id,
           email
@@ -33,4 +35,4 @@ const login = async (req : Request, res : Response) => {
     return sendResponse({res : res, status : 400, data : {msg : "Invalid Credentials"}})
 }
 
-export default login;
+export default login; 

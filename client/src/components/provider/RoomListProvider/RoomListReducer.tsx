@@ -81,15 +81,7 @@ export type IActionReducer =
     | {type : E_ACTION.ADD_ONE_MSG_TO_ROOM, payload : IAddOneMsgToRoom}
 
     //ADD_MSG_LIST_TO_ROOM
-export const recordActionRoomList: Record<TActionType, string> = {
-    HELLO_WOLRD : "HELLO_WORLD",
-    ADD_ROOM: "ADD_ROOM",
-    ADD_MSG_TO_ROOM: "ADD_MSG_TO_ROOM",
-    SET_ROOM_SELECT: "SET_ROOM_SELECT",
-    SET_ROOM_LIST: "SET_ROOM_LIST",
-    ADD_MSG: "ADD_MSG",
-    ADD_ONE_MSG_TO_ROOM : "ADD_ONE_MSG_TO_ROOM"
-}
+export const recordActionRoomList: Record<TActionType, string> = E_ACTION;
 
 export interface IState {
     roomList : IRoom[];//string[];
