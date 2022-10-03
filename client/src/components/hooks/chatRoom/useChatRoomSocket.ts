@@ -3,26 +3,9 @@ import useEffectOnce from './../../hooks/useEffectOnce';
 import { RoomListContext } from "./../../provider/RoomListProvider/RoomListProvider";
 import {IActionReducer, E_ACTION} from './../../provider/RoomListProvider/RoomListReducer';
 import ChatNetwork, {C_URL_WEBSOCKET} from './../../../NetworkAdapter/Chat.network';
-type TAction = 'msg' | 'file' | 'audio' | 'video' | 'join' | 'leave' | 'roomHistory';
+import * as types from './useChatRoomSocket.d';
 
-interface IGetOutputRoomElem {
-    roomName: string,
-    uuid: string,
-    messageList: any[] // todo rework
-}
-
-interface IMsgElem {
-    id: string;
-    objData: string;
-    typeObj: TAction;
-}
-//
-
-interface Props {
-    url: string;
-}
-
-function useChatRoomSocket(props: Props) {
+function useChatRoomSocket(props: types.Props) {
     const [socket, setSocket] = useState<WebSocket>();
     const [info, setInfo] = useState({ online: false });
     const [userInfo, setUserInfo] = useState(
@@ -31,7 +14,7 @@ function useChatRoomSocket(props: Props) {
             roomName: 'room1'
         });
 
-    const [msgList, setMsgList] = useState<IMsgElem[]>([])
+    const [msgList, setMsgList] = useState<types.IMsgElem[]>([])
     const { roomList, roomSelect, dispatch } = useContext(RoomListContext)
 
     // init- populate
@@ -60,22 +43,13 @@ function useChatRoomSocket(props: Props) {
                 msg = JSON.parse(msg);
 
                 //roomHistory
-                interface ITmpElem {
-                    message : string;
-                    time : string;
-                    username : string;
-                    uuid : string;
-                }
-                interface ITmpMsgListReceive {
-                    action : string;
-                    messageList : ITmpElem[];
-                }
+                
 
                 switch (msg.action) {
                 
                     case 'roomHistory': {
                         console.log("\tuseChatSocket : roomHistory")
-                        let tmpRemoveThisSheetLater : ITmpMsgListReceive = msg;
+                        let tmpRemoveThisSheetLater : types.ITmpMsgListReceive = msg;
 
                         //let parseData: IMsgElem[] = msgList.messageList.map(elem => ({ typeObj: 'msg', id: elem.uuid, objData: elem.message }))
                         // j ai pas eu derreur car not ppass by action function
@@ -91,12 +65,7 @@ function useChatRoomSocket(props: Props) {
                             roomName : msg.roomName
                         }
                          if (!!dispatch)
-                         {
-                             console.log("dispatch : ADD_ONE_MSG_TO_ROOM", payload)
-                             console.log("pourquoi tu trigger deux fois l mupdate fdp")
-                             // wtf call 2 times 
                              dispatch({type : E_ACTION.ADD_ONE_MSG_TO_ROOM, payload : payload});
-                         }
                          break;
                     }
                 }
@@ -114,7 +83,7 @@ function useChatRoomSocket(props: Props) {
     const getRoomList = (dispatch : React.Dispatch<IActionReducer> | undefined) => {
         ChatNetwork.getRoomList()
         .then((resp) => {
-            let data : IGetOutputRoomElem[] = resp.data;
+            let data : types.IGetOutputRoomElem[] = resp.data;
             console.log("dispatch : ", data)
             if (dispatch)
                 dispatch({type : E_ACTION.SET_ROOM_LIST, payload : {rooms : data}})
