@@ -1,8 +1,5 @@
 import React, { ReactElement, useState, useEffect, useRef } from 'react'
 import { v4 as uuidv4 } from 'uuid';
-import useChatRoomSocket from "./../../hooks/chatRoom/useChatRoomSocket";
-
-interface Props { }
 
 type TAction = 'msg' | 'file' | 'audio' | 'video' | 'join' | 'leave' | 'roomHistory';
 
@@ -25,54 +22,56 @@ const makeMsgElem = (props: IMakeMsgElem): IMsgElem => {
     };
 }
 
-function ChannelChatV3({ }: Props): ReactElement {
+interface IChannelChatV3 {
+    setMsgList : any;
+    socket : any;
+    userInfo : any;
+    roomList : any;
+    roomSelect : any;
+    msgList : any;
+    info : any;
+    setUserInfo : any;
+}
+
+function ChannelChatV3(props : IChannelChatV3): ReactElement {
     const bottomRef = useRef<any>(null);
     const [msg, setMsg] = useState("");
-    const {socket,
-           setMsgList,
-           userInfo,
-           msgList,
-           setUserInfo,
-
-           roomList,
-           roomSelect,
-           info} = useChatRoomSocket({url : 'ws://localhost:9002'});
 
     const sendMsg = (e: any) => {
         e.preventDefault();
-        setMsgList(old => ([...old, makeMsgElem({ objData: msg, typeObj: 'msg' })]));
-        socket?.send(JSON.stringify({
+        props.setMsgList(old => ([...old, makeMsgElem({ objData: msg, typeObj: 'msg' })]));
+        props.socket?.send(JSON.stringify({
             msg: msg,
             typeObj: 'msg',
-            username: userInfo.username,
-            roomName: roomList[roomSelect].roomName//userInfo.roomName
+            username: props.userInfo.username,
+            roomName: props.roomList[props.roomSelect].roomName//userInfo.roomName
         }));
     }
 
     useEffect(() => {
         bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [msgList])
+    }, [props.msgList])
 
 
-    return (
+    return ( 
         <section className="flexColumn">
             {
-                (info.online) ? <p>connected</p> : <p>unconnected</p>
+                (props.info.online) ? <p>connected</p> : <p>unconnected</p>
             }
             <input
                 type="text"
-                value={userInfo.username}
-                onChange={(e) => setUserInfo(old => ({ ...old, username: e.target.value }))}
+                value={props.userInfo.username}
+                onChange={(e) => props.setUserInfo(old => ({ ...old, username: e.target.value }))}
             />
             <input
                 type="text"
-                value={userInfo.roomName}
-                onChange={(e) => setUserInfo(old => ({ ...old, roomName: e.target.value }))}
+                value={props.userInfo.roomName}
+                onChange={(e) => props.setUserInfo(old => ({ ...old, roomName: e.target.value }))}
             />
             <form>
                 <section className="flexColumn cardChat overflowY breakAll">
-                    {(roomList && roomSelect > -1 && roomList[roomSelect] && roomList.length > roomSelect) &&
-                        roomList[roomSelect].messageList.map(e => <div className="w800">{e.username} : {e.message}</div>)
+                    {(props.roomList && props.roomSelect > -1 && props.roomList[props.roomSelect] && props.roomList.length > props.roomSelect) &&
+                        props.roomList[props.roomSelect].messageList.map(e => <div className="w800">{e.username} : {e.message}</div>)
                     }
                     <div ref={bottomRef} />
                 </section>

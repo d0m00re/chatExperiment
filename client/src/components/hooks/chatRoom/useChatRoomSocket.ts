@@ -20,7 +20,7 @@ function useChatRoomSocket(props: types.Props) {
     // init- populate
     useEffectOnce(() => {
         console.log("useChatRoomSocket :  useEffectOnce")
-        const _socket = new WebSocket(C_URL_WEBSOCKET);
+        const _socket = new WebSocket(C_URL_WEBSOCKET, ["access_token", "test"]);//, "socket token auth");
         setSocket(_socket);
 
         // socket operation
@@ -67,7 +67,10 @@ function useChatRoomSocket(props: types.Props) {
                     }
 
                     case 'create-room': {
-                        console.log('create room')
+                        console.log('create room');
+                        console.log(msg)
+                        console.log('-----')
+                        break;
                     }
                 }
             }
@@ -92,6 +95,14 @@ function useChatRoomSocket(props: types.Props) {
         .catch(err => {
             console.log("error request : ", err)
         })
+    }
+
+    const createARoom = (roomName : string) => {
+        alert(roomName)
+        socket.send(JSON.stringify({
+            typeObj : 'create-room',
+            roomName : roomName
+        }))
     }
 
     useEffect(() => {
@@ -120,7 +131,8 @@ function useChatRoomSocket(props: types.Props) {
         info,
         getHistoryRoom,
         roomList,
-        roomSelect
+        roomSelect,
+        createARoom
     };
 }
 

@@ -28,3 +28,12 @@ export interface ITmpMsgListReceive {
     action : string;
     messageList : ITmpElem[];
 }
+
+/*
+SR : socket receive
+*/
+export interface I_SR_CreateRoom {
+    id : string;
+    roomname : string;
+    owner : string;
+}

@@ -1,15 +1,22 @@
-import React, { ReactElement, useState } from 'react';
-import ApiChat from './../../../NetworkAdapter/Chat.network';
+import { useState } from 'react';
+import ApiChat from './../../../../NetworkAdapter/Chat.network';
 
-const CreateRoom = () => {
+interface ICreateRoom {
+    createARoom : (roomName: string) => void;
+}
+
+const CreateRoom = (props : ICreateRoom) => {
     const [roomname, setRoomname] = useState("");
 
     const updateRoomName = (e) => {
-        setRoomname(old => e.target.value);
+        setRoomname(e.target.value);
     }
 
     const onUpdateServer = (e) => {
         e.preventDefault();
+        props.createARoom(roomname);
+
+        /*
         console.log("on update server")
         setRoomname("");
         ApiChat.postCreateRoom({roomname})
@@ -21,7 +28,8 @@ const CreateRoom = () => {
             console.log("Error create room")
             console.log(err);
         })
-    }
+        */
+    } 
 
     return (
         <section>

@@ -7,6 +7,9 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
+import * as moongoose from './config/database';
+moongoose.connect();
+
 //const room = new Room("room1");
 let globalRoomManagement = new GlobalRoomsManagement();
 globalRoomManagement.createRoom("general")
@@ -24,7 +27,8 @@ function setCorsHeaders(response : any) {
   // You can change the below headers as they're just examples
   response.writeHeader("Access-Control-Allow-Origin", "*");
   response.writeHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  response.writeHeader("Access-Control-Allow-Headers", "origin, content-type, accept, x-requested-with");
+   response.writeHeader("Access-Control-Allow-Headers", "*");//"origin, content-type, accept, x-requested-with", "x-access-token");
+   response.writeHeader("Access-Control-Allow-Credentials", "true");
   response.writeHeader("Access-Control-Max-Age", "3600");
 }
 
@@ -66,14 +70,6 @@ uws
     res.writeStatus('200 OK')
       .writeHeader('IsExample', 'Yes')
       .end(JSON.stringify(room));
-  })
-  .post('/createRoom', (res : HttpResponse, req : any) => {
-    console.log("go test create room : ");
-    //console.log(req.forEach(e => console.log(e)))
-    console.log(req.body)
-    res.writeStatus('200 OK')
-    .writeHeader('IsExample', 'Yes')
-    .end()
   })
   .ws('/*', {
     open: (ws) => {

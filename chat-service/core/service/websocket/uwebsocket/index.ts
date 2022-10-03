@@ -1,6 +1,7 @@
 import uws from 'uWebSockets.js';
 import GlobalRoomsManagement from "./../../../entities/GlobalRoomsManagement";
 import * as types from "./../../../entities/types";
+import roomCreateOne from './../../../../API/Room/db/roomCreateOne.db';
 
 // todo : first decoupling phase
 // todo : let only socket function without logic
@@ -24,6 +25,8 @@ const socketOnMessage = (globalRoomManagement : GlobalRoomsManagement, ws : uws.
 
     switch (data.typeObj) {
       case 'join':
+        console.log("wtf ::::")
+        console.log(ws)
         console.log(`[${data.roomName}] : join : ${data.username}`)
         globalRoomManagement.userJoinRoom(data);
         let dataReturn = globalRoomManagement.getRoomWtName(data.roomName)
@@ -50,7 +53,15 @@ const socketOnMessage = (globalRoomManagement : GlobalRoomsManagement, ws : uws.
 
       case 'create-room':
           console.log("create a room")
-          ws.send(JSON.stringify({action : 'create-room', data : {id : 'id', roomName : 'roomname', owner : 'you'}}))
+          console.log(data.roomName);
+          roomCreateOne({roomName : data.roomName})
+          .then(resp => {
+            console.log(resp);
+            ws.send(JSON.stringify({action : 'create-room', data : {id : 'id', roomName : 'roomname', owner : 'you'}}))
+          })
+          .catch(err => {
+            console.log("Error create room : ",)
+          })
       break;
     }
 }

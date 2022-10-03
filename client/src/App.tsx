@@ -1,7 +1,7 @@
 import './App.css';
-import PageRoomList from './components/pages/RoomList';
+import ChatMultyRoom from './components/pages/ChatMultyRoom/ChatMultyRoom';
 import * as AuthPage from './components/pages/Auth';
-import {useState, useEffect, useContext} from 'react';
+import { useContext } from 'react';
 import {
   createBrowserRouter,
   RouterProvider,
@@ -10,11 +10,12 @@ import {
 import AuthNetwork from "./NetworkAdapter/Auth.network";
 
 import * as MeProvider from './components/provider/meListProvider';
-import {E_ACTION_ME} from './components/provider/meListProvider/meReducer';
+import { E_ACTION_ME } from './components/provider/meListProvider/meReducer';
 
-import {MeContext} from './components/provider/meListProvider/meProvider';
+import { MeContext } from './components/provider/meListProvider/meProvider';
 
 import useEffectOnce from './components/hooks/useEffectOnce';
+import RoomListProvider from "./components/provider/RoomListProvider/RoomListProvider";//"../provider/RoomListProvider/RoomListProvider";
 
 import "./index.css";
 
@@ -58,27 +59,27 @@ function SubApp() {
   useEffectOnce(() => {
     // getME
     AuthNetwork.me()
-    .then(resp => {
-      console.log("Success");
-      let userInfo = resp.data;
-      console.log(resp.data);
-      dispatch({type : E_ACTION_ME.SET_USER, payload : {user_id : userInfo.user_id, email : userInfo.email}});
-    })
-    .catch(err => {
-      console.log("Error");
-      console.log(err);
-    })
+      .then(resp => {
+        console.log("Success");
+        let userInfo = resp.data;
+        console.log(resp.data);
+        dispatch({ type: E_ACTION_ME.SET_USER, payload: { user_id: userInfo.user_id, email: userInfo.email } });
+      })
+      .catch(err => {
+        console.log("Error");
+        console.log(err);
+      })
   });
 
   return <>
     {(!(user_id?.length)) ?
       <RouterProvider router={routerAuth} /> :
-      <>
-      <p style={{color : 'red'}}>{user_id} {email}</p>
-      <PageRoomList />
-      </>
+      <RoomListProvider>
+        <p style={{ color: 'red' }}>{user_id} {email}</p>
+        <ChatMultyRoom />
+      </RoomListProvider>
     }
-    </>
+  </>
 
 }
 
