@@ -8,10 +8,10 @@ export const MeContext = createContext<IStateWtDispatch>({
 });
 
 function MeProvider(props : any) {
-  const [roomList, dispatch] = useReducer(meReducer, makeMe());
+  const [me, dispatch] = useReducer(meReducer, makeMe());
     
     return (
-        <MeContext.Provider value={{...roomList, dispatch }}>
+        <MeContext.Provider value={{...me, dispatch }}>
             {props.children}
         </MeContext.Provider>
     )

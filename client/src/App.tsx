@@ -1,7 +1,7 @@
 import './App.css';
 import PageRoomList from './components/pages/RoomList';
 import * as AuthPage from './components/pages/Auth';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useContext} from 'react';
 import {
   createBrowserRouter,
   RouterProvider,
@@ -9,9 +9,16 @@ import {
 
 import APIAuth from './components/pages/Auth/Network/Auth.network';
 
+import * as MeProvider from './components/provider/meListProvider';
+import {E_ACTION_ME} from './components/provider/meListProvider/meReducer';
+
+import {MeContext} from './components/provider/meListProvider/meProvider';
+
+import useEffectOnce from './components/hooks/useEffectOnce';
+
 import "./index.css";
 
-const router = createBrowserRouter([
+const routerAuth = createBrowserRouter([
   {
     path: "/",
     element: <AuthPage.Navbar />,
@@ -33,28 +40,46 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  useEffect(() => {
-    console.log("test localstorage : ");
-    //localStorage.setItem('test', 'hola ci m pickle')
-    // get token
-    let token = localStorage.getItem('token');
-    APIAuth.me({token})
-    .then(resp => {
-      console.log("Succes login : ")
-      console.log(resp.data)
-    })
-    .catch(err => {
-      console.log("Err : ");
-      console.log(err);
-    })
-  },
-  [])
   return (
     <div className="App flexRow">
-      <RouterProvider router={router} />
-      {/*<PageRoomList /> */}
+      <MeProvider.MeProvider>
+        <SubApp />
+      </MeProvider.MeProvider>
     </div>
   )
+}
+
+function SubApp() {
+  const {
+    user_id,
+    email,
+    dispatch,
+  } = useContext(MeContext)
+  useEffectOnce(() => {
+    // getME
+    APIAuth.me()
+    .then(resp => {
+      console.log("Success");
+      let userInfo = resp.data;
+      console.log(resp.data);
+      dispatch({type : E_ACTION_ME.SET_USER, payload : {user_id : userInfo.user_id, email : userInfo.email}});
+    })
+    .catch(err => {
+      console.log("Error");
+      console.log(err);
+    })
+  });
+
+  return <>
+    {(!(user_id?.length)) ?
+      <RouterProvider router={routerAuth} /> :
+      <>
+      <p style={{color : 'red'}}>{user_id} {email}</p>
+      <PageRoomList />
+      </>
+    }
+    </>
+
 }
 
 export default App

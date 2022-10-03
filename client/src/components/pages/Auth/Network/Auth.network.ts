@@ -31,7 +31,6 @@ interface ILoginOutput {
 
 interface ILogoutInput {};
 interface IMeInput {
-    token : string;
 };
 class AuthNetwork {
     // login
@@ -51,7 +50,7 @@ class AuthNetwork {
     }
 
     // me
-    me(props : IMeInput) {
+    me() {
         const url = `${C_URL}/me`;
         return GenNetworkAdapter.get(url);
     }
