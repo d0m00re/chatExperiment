@@ -1,10 +1,11 @@
 /* Non-SSL is simply App() */
 import uws, {HttpResponse, HttpRequest} from 'uWebSockets.js';
-import { v4 as uuidv4 } from 'uuid';
 import GlobalRoomsManagement from "./core/entities/GlobalRoomsManagement";
-import * as types from "./core/entities/types";
 import * as socketCore from "./core/service/websocket/uwebsocket";
-//
+
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 //const room = new Room("room1");
 let globalRoomManagement = new GlobalRoomsManagement();
@@ -36,6 +37,8 @@ uws
       .end('Hello there!');
   })
   .get('/roomList', (res: any, req: any) => {
+    console.log("/roomList");
+
     setCorsHeaders(res);
 
     let getAllRoomList = globalRoomManagement.getAllRoom();
@@ -45,8 +48,9 @@ uws
       .end(JSON.stringify(getAllRoomList));
   })
   .get('/roomHistory', (res : HttpResponse, req : HttpRequest) => {
-    console.log("/roomHistory")
+    console.log("/roomHistory");
     setCorsHeaders(res);
+    
     let roomName = req.getQuery('roomName');
     let room = globalRoomManagement.getRoomWtName(roomName);
     // if nothing found

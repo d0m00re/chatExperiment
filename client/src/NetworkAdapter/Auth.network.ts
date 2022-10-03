@@ -30,8 +30,7 @@ interface ILoginOutput {
 }
 
 interface ILogoutInput {};
-interface IMeInput {
-};
+
 class AuthNetwork {
     // login
     login(props : ILoginInput) : Promise<{data : ILoginOutput}> {

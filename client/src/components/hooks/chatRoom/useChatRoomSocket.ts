@@ -1,12 +1,9 @@
-import React, { ReactElement, useEffect, useContext, useState } from 'react'
+import React, { useEffect, useContext, useState } from 'react'
 import useEffectOnce from './../../hooks/useEffectOnce';
 import { RoomListContext } from "./../../provider/RoomListProvider/RoomListProvider";
 import {IActionReducer, E_ACTION} from './../../provider/RoomListProvider/RoomListReducer';
-import { v4 as uuidv4 } from 'uuid';
-import axios from "axios";
-
+import ChatNetwork, {C_URL_WEBSOCKET} from './../../../NetworkAdapter/Chat.network';
 type TAction = 'msg' | 'file' | 'audio' | 'video' | 'join' | 'leave' | 'roomHistory';
-
 
 interface IGetOutputRoomElem {
     roomName: string,
@@ -25,7 +22,6 @@ interface Props {
     url: string;
 }
 
-//'ws://localhost:9002'
 function useChatRoomSocket(props: Props) {
     const [socket, setSocket] = useState<WebSocket>();
     const [info, setInfo] = useState({ online: false });
@@ -41,7 +37,7 @@ function useChatRoomSocket(props: Props) {
     // init- populate
     useEffectOnce(() => {
         console.log("useChatRoomSocket :  useEffectOnce")
-        const _socket = new WebSocket('ws://localhost:9002');
+        const _socket = new WebSocket(C_URL_WEBSOCKET);
         setSocket(_socket);
 
         // socket operation
@@ -58,7 +54,7 @@ function useChatRoomSocket(props: Props) {
             };
 
             _socket.onmessage = (message) => {
-                console.log("!!!!! socket.onmessage")
+                console.log("socket.onmessage")
                 let msg = message.data;
 
                 msg = JSON.parse(msg);
@@ -78,7 +74,7 @@ function useChatRoomSocket(props: Props) {
                 switch (msg.action) {
                 
                     case 'roomHistory': {
-                        console.log("useChatSocket : roomHistory")
+                        console.log("\tuseChatSocket : roomHistory")
                         let tmpRemoveThisSheetLater : ITmpMsgListReceive = msg;
 
                         //let parseData: IMsgElem[] = msgList.messageList.map(elem => ({ typeObj: 'msg', id: elem.uuid, objData: elem.message }))
@@ -112,27 +108,20 @@ function useChatRoomSocket(props: Props) {
     // update room message
     const getHistoryRoom = (roomName: string) => {
         console.log("History room : ", roomName);
-        axios.get(`http://localhost:9002/roomHistory?roomName=${roomName}`)
-            .then(resp => {
-                console.log(" response")
-                console.log(resp)
-            })
-            .catch(err => {
-                console.log("error request : ", err)
-            })
+        return ChatNetwork.getHistoryRoom(roomName);
     }
 
     const getRoomList = (dispatch : React.Dispatch<IActionReducer> | undefined) => {
-        axios.get(`http://localhost:9002/roomList`)
-            .then((resp) => {
-                let data : IGetOutputRoomElem[] = resp.data;
-                console.log("dispatch : ", data)
-                if (dispatch)
-                    dispatch({type : E_ACTION.SET_ROOM_LIST, payload : {rooms : data}})
-            })
-            .catch(err => {
-                console.log("error request : ", err)
-            })
+        ChatNetwork.getRoomList()
+        .then((resp) => {
+            let data : IGetOutputRoomElem[] = resp.data;
+            console.log("dispatch : ", data)
+            if (dispatch)
+                dispatch({type : E_ACTION.SET_ROOM_LIST, payload : {rooms : data}})
+        })
+        .catch(err => {
+            console.log("error request : ", err)
+        })
     }
 
     useEffect(() => {

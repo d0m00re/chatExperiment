@@ -7,7 +7,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
-import APIAuth from './components/pages/Auth/Network/Auth.network';
+import AuthNetwork from "./NetworkAdapter/Auth.network";
 
 import * as MeProvider from './components/provider/meListProvider';
 import {E_ACTION_ME} from './components/provider/meListProvider/meReducer';
@@ -57,7 +57,7 @@ function SubApp() {
   } = useContext(MeContext)
   useEffectOnce(() => {
     // getME
-    APIAuth.me()
+    AuthNetwork.me()
     .then(resp => {
       console.log("Success");
       let userInfo = resp.data;

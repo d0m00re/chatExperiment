@@ -12,7 +12,6 @@ const connect = () => {
         process.exit(1)
     }
         // Connecting to the database
-  console.log("MONGO URI ===>", MONGO_URI);
   mongoose
     .connect(MONGO_URI, {
     //  useNewUrlParser: true,

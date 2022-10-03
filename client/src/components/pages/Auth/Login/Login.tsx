@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { ReactElement, useState } from 'react'
 import Paper from '../../../atoms/Paper';
-import AuthNetwork from "./../Network/Auth.network";
+import AuthNetwork from "./../../../../NetworkAdapter/Auth.network";
 
 interface ILoginState {
     email : string;
@@ -11,14 +11,8 @@ interface ILoginState {
 function Login(): ReactElement {
     const [loginInfo, setLoginInfo] = useState<ILoginState>({email : '', password : ''});
 
-    const helloWorld = () => {
-        axios.post("http://localhost:4242/")
-        .then(e => console.log("success")) 
-        .catch(err => console.log("error"))   
-    }
-
     const getMe = () => {
-        AuthNetwork.me({})
+        AuthNetwork.me()
         .then(e => console.log("success")) 
         .catch(err => console.log("error"))   
     }
@@ -27,11 +21,11 @@ function Login(): ReactElement {
         e.preventDefault();
         console.log("try to loggin go go go ")
         AuthNetwork.login(loginInfo)
-        .then(resp => {
+        .then((resp : any) => {
             console.log("Resp good")
           //  alert('good');
           //alert(resp.data.token)
-          localStorage.setItem('token', resp.data.token);
+          localStorage.setItem('token', resp?.data?.token);
           console.log(resp)
         })
         .catch(err => {
@@ -61,7 +55,6 @@ function Login(): ReactElement {
                 /> 
                 <button>login</button>
             </form>
-            <button onClick={helloWorld}>hello world</button>
             <button onClick={getMe}>get me</button>
         </Paper>
     )
