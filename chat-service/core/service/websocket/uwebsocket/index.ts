@@ -47,6 +47,11 @@ const socketOnMessage = (globalRoomManagement : GlobalRoomsManagement, ws : uws.
         console.log(`[${data.roomName}] - emit msg - ${JSON.stringify({action : 'msg', ...data})}`)
         ws.publish(data.roomName, JSON.stringify({action : 'msg', ...data}), false);
         break;
+
+      case 'create-room':
+          console.log("create a room")
+          ws.send(JSON.stringify({action : 'create-room', data : {id : 'id', roomName : 'roomname', owner : 'you'}}))
+      break;
     }
 }
 

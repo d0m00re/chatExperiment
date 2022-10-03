@@ -5,6 +5,8 @@ import NavBar from "./../../templates/NavBar";
 import RoomListProvider, { RoomListContext } from "./../../provider/RoomListProvider/RoomListProvider";
 import { E_ACTION } from "./../../provider/RoomListProvider/RoomListReducer";
 
+import CreateRoom from './../../pages/CreateRoom/CreateRoom';
+
 function MainRoomList() {
     const {
         roomList,
@@ -37,6 +39,7 @@ function MainRoomList() {
 function RoomList(): ReactElement {
     return (
         <RoomListProvider>
+            <CreateRoom />
             <MainRoomList />
         </RoomListProvider>
 

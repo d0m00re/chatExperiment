@@ -67,6 +67,14 @@ uws
       .writeHeader('IsExample', 'Yes')
       .end(JSON.stringify(room));
   })
+  .post('/createRoom', (res : HttpResponse, req : any) => {
+    console.log("go test create room : ");
+    //console.log(req.forEach(e => console.log(e)))
+    console.log(req.body)
+    res.writeStatus('200 OK')
+    .writeHeader('IsExample', 'Yes')
+    .end()
+  })
   .ws('/*', {
     open: (ws) => {
       socketCore.socketOnOpen(globalRoomManagement, ws);

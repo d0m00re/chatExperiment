@@ -42,9 +42,6 @@ function useChatRoomSocket(props: types.Props) {
 
                 msg = JSON.parse(msg);
 
-                //roomHistory
-                
-
                 switch (msg.action) {
                 
                     case 'roomHistory': {
@@ -67,6 +64,10 @@ function useChatRoomSocket(props: types.Props) {
                          if (!!dispatch)
                              dispatch({type : E_ACTION.ADD_ONE_MSG_TO_ROOM, payload : payload});
                          break;
+                    }
+
+                    case 'create-room': {
+                        console.log('create room')
                     }
                 }
             }
