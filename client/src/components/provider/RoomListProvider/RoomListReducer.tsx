@@ -16,13 +16,15 @@ export interface IMessageAdd extends IMessage {
   
 export interface IRoom {
     roomName : string;
-    messageList : IMessage[]
+    messageList : IMessage[];
+    uuid : string;
 }
 
 const makeEmptyIRoom = (roomName : string) : IRoom => {
     return ({
         roomName : roomName,
-        messageList : []
+        messageList : [],
+        uuid : ''
     });
 }
 

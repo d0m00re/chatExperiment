@@ -6,7 +6,7 @@ interface IRoomCreateOne {
     users ?: string[];
 }
 
-const userCreateOne =  (props : IRoomCreateOne) => {
+const roomCreateOne =  (props : IRoomCreateOne) => {
     return RoomModel.create({
         roomName : props.roomName ?? null,
         owner : props.owner ?? null,
@@ -14,4 +14,4 @@ const userCreateOne =  (props : IRoomCreateOne) => {
     });
 }
 
-export default userCreateOne;
+export default roomCreateOne;

@@ -46,4 +46,4 @@ const CreateRoom = (props : ICreateRoom) => {
     )
 }
 
-export default CreateRoom
+export default CreateRoom;

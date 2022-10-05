@@ -32,7 +32,7 @@ const socketOnMessage = (globalRoomManagement : GlobalRoomsManagement, ws : uws.
         let dataReturn = globalRoomManagement.getRoomWtName(data.roomName)
         ws.subscribe(data.roomName);
         // send back socket data
-        ws.send(JSON.stringify({action : "roomHistory", ...dataReturn}));
+        ws.send(JSON.stringify({action : "room-history", ...dataReturn}));
         break;
       case 'leave':
         console.log("leave : ", data.roomName)
@@ -56,7 +56,6 @@ const socketOnMessage = (globalRoomManagement : GlobalRoomsManagement, ws : uws.
           console.log(data.roomName);
           roomCreateOne({roomName : data.roomName})
           .then(resp => {
-            console.log(resp);
             ws.send(JSON.stringify({action : 'create-room', data : {id : 'id', roomName : 'roomname', owner : 'you'}}))
           })
           .catch(err => {

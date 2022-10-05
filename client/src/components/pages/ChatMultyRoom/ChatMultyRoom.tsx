@@ -63,7 +63,7 @@ function ChatMultyRoom(): ReactElement {
         msgList,
         setUserInfo,
         info,
-        createARoom} = useChatRoomSocket({url : 'ws://localhost:9002'});   
+        createARoom} = useChatRoomSocket({url : 'http://localhost:9002'});   
 
     return (
         <>

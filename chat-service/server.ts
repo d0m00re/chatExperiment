@@ -1,17 +1,19 @@
-/* Non-SSL is simply App() */
-import uws, {HttpResponse, HttpRequest} from 'uWebSockets.js';
-import GlobalRoomsManagement from "./core/entities/GlobalRoomsManagement";
-import * as socketCore from "./core/service/websocket/uwebsocket";
-
+import express from "express";
+import { createServer } from "http";
+import { Server } from "socket.io";
 import * as dotenv from 'dotenv';
+import cors from 'cors';
+import GlobalRoomsManagement from "./core/entities/GlobalRoomsManagement"
+import sendResponse from './expressUtils/sendResponse'
+import * as roomDb from './API/Room/db';
+import * as jwt from './core/service/jwt';
 
-dotenv.config();
+dotenv.config()
+import * as moongoose from './config/database'
+moongoose.connect()
 
-import * as moongoose from './config/database';
-moongoose.connect();
 
-//const room = new Room("room1");
-let globalRoomManagement = new GlobalRoomsManagement();
+let globalRoomManagement = new GlobalRoomsManagement()
 globalRoomManagement.createRoom("general")
 globalRoomManagement.createRoom("random")
 globalRoomManagement.createRoom("project")
@@ -21,16 +23,95 @@ globalRoomManagement.createRoom("react")
 globalRoomManagement.createRoom("nodejs")
 globalRoomManagement.createRoom("ux-ui")
 
-//
+const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, { cors: {origin: "*"}});
 
-function setCorsHeaders(response : any) {
-  // You can change the below headers as they're just examples
-  response.writeHeader("Access-Control-Allow-Origin", "*");
-  response.writeHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-   response.writeHeader("Access-Control-Allow-Headers", "*");//"origin, content-type, accept, x-requested-with", "x-access-token");
-   response.writeHeader("Access-Control-Allow-Credentials", "true");
-  response.writeHeader("Access-Control-Max-Age", "3600");
+interface IEvent {
+  typeObj : 'create-room' | 'msg' | 'room-list' | 'room-history' | 'room-join';
+  roomName : string;
+  roomId ?: string;
 }
+
+
+
+app.use(express.json())
+app.use(cors())
+
+app.get('/', (req : any, res : any) => {
+  return sendResponse({res, status : 200, data : "Hello world"})
+
+})
+
+app.get('/roomList', async (req: any, res: any) => {
+  console.log("/roomList")
+
+  let getAllRoomList = await roomDb.findAllRoom();//globalRoomManagement.getAllRoom()
+  return sendResponse({res, status : 200, data : getAllRoomList})
+})
+
+io.on("connection",  (socket) => {
+  let _token = socket.handshake.headers['x-access-token'];
+  let token = '';
+  if (typeof(_token) !== 'string') {
+    console.log("user not log")
+  }
+  else
+    token = _token;
+  let getUserInfo = jwt.decodeToken(token);
+  console.log("CONNECTION extra headers")
+  console.log(getUserInfo)
+  socket.on('chat message', (msg) => {
+    console.log('message: ' + msg);
+  });
+  socket.on('event', async (event : IEvent) => {
+    switch(event.typeObj) {
+      case 'create-room':
+        console.log("create room")
+        let resp = await roomDb.roomCreateOne({roomName : event.roomName, owner : getUserInfo?.user_id})
+        if (resp) {
+          console.log("success")
+          console.log(resp)
+          socket.emit('event', {typeObj : 'create-room', data : resp})
+        }
+        else {
+          console.log("error")
+          console.log(resp);
+          socket.emit('event', {typeObj : 'error', msg : 'impossible to create a room, please contact us'})
+        }
+        
+      break;
+      case 'msg':
+        console.log("msg")
+        console.log(event)
+      break;
+      case 'room-list':
+        console.log("msg")
+        console.log(event)
+      break;
+      case 'room-history':
+        console.log("msg")
+        console.log(event)
+      break;
+      case 'room-join':
+        console.log("join room : ");
+        console.log(event)
+        // add room auth check
+        if (event.roomId)
+          socket.join(event.roomId);
+      break;
+      default :
+        console.log("no event found")
+        console.log(event)
+      break;
+    }
+  });
+});
+
+httpServer.listen(9002);
+
+/*
+
 
 uws
   .App()
@@ -63,9 +144,6 @@ uws
       .writeHeader('IsExample', 'Yes')
       .end('toom history test');
     }
-    // retrieve room history 
-    // todo : last 20 messages pagination
-    //let room = globalRoomManagement.getRoomWtName("");
 
     res.writeStatus('200 OK')
       .writeHeader('IsExample', 'Yes')
@@ -86,7 +164,6 @@ uws
     }
   }).get('/*', (res, req) => {
 
-    /* It does Http as well */
     res.writeStatus('200 OK').writeHeader('IsExample', 'Yes').end('Hello there! Pickle');
 
   }).listen(9002, (listenSocket) => {
@@ -95,3 +172,4 @@ uws
       console.log('Listening to port 9002');
     }
   });
+  */
