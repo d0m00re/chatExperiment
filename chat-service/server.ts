@@ -8,11 +8,14 @@ import sendResponse from './expressUtils/sendResponse'
 import * as roomDb from './API/Room/db';
 import * as jwt from './core/service/jwt';
 
+import roomMessageCreateOne from './API/RoomMessage/db/roomMessageCreateOne.db'
+
 dotenv.config()
 import * as moongoose from './config/database'
 moongoose.connect()
 
 
+/*
 let globalRoomManagement = new GlobalRoomsManagement()
 globalRoomManagement.createRoom("general")
 globalRoomManagement.createRoom("random")
@@ -22,18 +25,17 @@ globalRoomManagement.createRoom("tech")
 globalRoomManagement.createRoom("react")
 globalRoomManagement.createRoom("nodejs")
 globalRoomManagement.createRoom("ux-ui")
-
+*/
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, { cors: {origin: "*"}});
 
 interface IEvent {
-  typeObj : 'create-room' | 'msg' | 'room-list' | 'room-history' | 'room-join';
+  typeObj : 'create-room' | 'room-msg' | 'room-list' | 'room-history' | 'room-join' | 'room-send-msg';
   roomName : string;
   roomId ?: string;
+  msg ?: string;
 }
-
-
 
 app.use(express.json())
 app.use(cors())
@@ -81,9 +83,22 @@ io.on("connection",  (socket) => {
         }
         
       break;
-      case 'msg':
+      case 'room-msg': // next goal
         console.log("msg")
         console.log(event)
+      break;
+      // receive msg
+      case 'room-send-msg':
+        console.log('receive msg : ')
+        console.log(event)
+        console.log("attach msg to room")
+        let data = {
+          roomId : event.roomId ?? "",
+          userId : "42",
+          msg : event.msg ?? ""
+        }
+        await roomMessageCreateOne(data);
+        // go go go
       break;
       case 'room-list':
         console.log("msg")
@@ -97,8 +112,11 @@ io.on("connection",  (socket) => {
         console.log("join room : ");
         console.log(event)
         // add room auth check
-        if (event.roomId)
+        if (event.roomId) {
+          console.log("* user joinroom : ", event.roomId)
           socket.join(event.roomId);
+          socket.emit('event', {typeObj : 'room-history', roomId : event.roomId})
+        }
       break;
       default :
         console.log("no event found")

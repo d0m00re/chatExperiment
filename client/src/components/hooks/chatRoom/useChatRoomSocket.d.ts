@@ -1,4 +1,5 @@
-export type TAction = 'msg' | 'file' | 'audio' | 'video' | 'join' | 'leave' | 'roomHistory';
+// todo : bad
+export type TAction = 'room-msg' | 'file' | 'audio' | 'video' | 'join' | 'leave' | 'roomHistory';
 
 export interface IGetOutputRoomElem {
     roomName: string,

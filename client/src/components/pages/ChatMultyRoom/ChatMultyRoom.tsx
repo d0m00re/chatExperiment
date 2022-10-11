@@ -35,6 +35,8 @@ function RoomChannel(props : IMainRoomList) {
             })}}>hello world</button>
             <NavBar
                 selectID={roomSelect}
+                // join room : 
+                
                 //  select room
                 setSelectID={(id: number) => dispatch && dispatch({
                     type: E_ACTION.SET_ROOM_SELECT,

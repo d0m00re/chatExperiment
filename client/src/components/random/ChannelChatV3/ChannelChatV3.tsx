@@ -1,7 +1,7 @@
 import React, { ReactElement, useState, useEffect, useRef } from 'react'
 import { v4 as uuidv4 } from 'uuid';
 
-type TAction = 'msg' | 'file' | 'audio' | 'video' | 'join' | 'leave' | 'roomHistory';
+type TAction = 'room-msg' | 'file' | 'audio' | 'video' | 'join' | 'leave' | 'roomHistory';
 
 interface IMsgElem {
     id: string;
@@ -37,15 +37,23 @@ function ChannelChatV3(props : IChannelChatV3): ReactElement {
     const bottomRef = useRef<any>(null);
     const [msg, setMsg] = useState("");
 
+    // send msg to server
     const sendMsg = (e: any) => {
         e.preventDefault();
-        props.setMsgList(old => ([...old, makeMsgElem({ objData: msg, typeObj: 'msg' })]));
-        props.socket?.send(JSON.stringify({
+        props.setMsgList(old => ([...old, makeMsgElem({ objData: msg, typeObj: 'room-msg' })]));
+        console.log("send msg")
+        console.log({
+            typeObj: 'room-send-msg',
             msg: msg,
-            typeObj: 'msg',
             username: props.userInfo.username,
-            roomName: props.roomList[props.roomSelect].roomName//userInfo.roomName
-        }));
+            roomId: props.roomList[props.roomSelect].uuid//userInfo.roomName
+        })
+        props.socket?.emit("event",{
+            typeObj: 'room-send-msg',
+            msg: msg,
+            username: props.userInfo.username,
+            roomId: props.roomList[props.roomSelect].uuid//userInfo.roomName
+        });
     }
 
     useEffect(() => {

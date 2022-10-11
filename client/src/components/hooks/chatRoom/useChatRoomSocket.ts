@@ -7,7 +7,7 @@ import * as types from './useChatRoomSocket.d';
 import io from "socket.io-client";
 
 interface IEvent {
-    typeObj : 'create-room' | 'msg' | 'room-list' | 'room-history',
+    typeObj : 'create-room' | 'room-msg' | 'room-list' | 'room-history',
     data : any;
 }
 
@@ -56,18 +56,20 @@ function useChatRoomSocket(props: types.Props) {
                     let createRoom : IEventCreateRoom = msg.data;
                     console.log("create room : ", createRoom)
                 break;
-                case 'msg':
+                case 'room-msg':
                     console.log("msg")
                 break;
                 case 'room-history':
                     console.log('room history')
+                    console.log(msg)
                 break;
                 case 'room-list':
                     console.log("room-list")
+                    console.log(msg)
                 break;
                 default:
 
-                break;
+                break; 
             }
         })
 
@@ -99,13 +101,13 @@ function useChatRoomSocket(props: types.Props) {
                         console.log("\tuseChatSocket : roomHistory")
                         let tmpRemoveThisSheetLater : types.ITmpMsgListReceive = msg;
 
-                        //let parseData: IMsgElem[] = msgList.messageList.map(elem => ({ typeObj: 'msg', id: elem.uuid, objData: elem.message }))
+                        //let parseData: IMsgElem[] = msgList.messageList.map(elem => ({ typeObj: 'room-msg', id: elem.uuid, objData: elem.message }))
                         // j ai pas eu derreur car not ppass by action function
                      //   if (dispatch)
                      //      dispatch({type : E_ACTION.ADD_MSG_TO_ROOM, payload : msg.messageList});
                         break;
                     }
-                    case 'msg': {
+                    case 'room-msg': {
                         console.log("useChatSocket : msg: ")                        
                         const payload = {
                             msg : msg.msg,
