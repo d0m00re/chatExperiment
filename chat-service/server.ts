@@ -3,12 +3,12 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import * as dotenv from 'dotenv';
 import cors from 'cors';
-import GlobalRoomsManagement from "./core/entities/GlobalRoomsManagement"
 import sendResponse from './expressUtils/sendResponse'
-import * as roomDb from './API/Room/db';
-import * as jwt from './core/service/jwt';
 
-import roomMessageCreateOne from './API/RoomMessage/db/roomMessageCreateOne.db'
+import RoomDb from './API/Room/db';
+import RoomMessageDb from './API/RoomMessage/db';
+
+import * as jwt from './core/service/jwt';
 
 dotenv.config()
 import * as moongoose from './config/database'
@@ -48,8 +48,34 @@ app.get('/', (req : any, res : any) => {
 app.get('/roomList', async (req: any, res: any) => {
   console.log("/roomList")
 
-  let getAllRoomList = await roomDb.findAllRoom();//globalRoomManagement.getAllRoom()
+  let getAllRoomList = await RoomDb.findAllRoom();//globalRoomManagement.getAllRoom()
   return sendResponse({res, status : 200, data : getAllRoomList})
+})
+
+app.get('/roomHistory', async (req : any, res : any) => {
+  console.log("/roomQuery");
+  
+  console.log(req.query);
+
+  let id = req.query.id;
+
+  if (!id)
+    return sendResponse({res, status : 404, data : "nothing"})
+
+  try {
+    let dataRoom = await RoomMessageDb.findOneRoomMsg(id);
+    let dataMsgList = await RoomMessageDb.findAllRoomMsg(id);
+    console.log(dataRoom)
+    console.log(dataMsgList)
+    return sendResponse({res, status : 200, data : {
+      room : dataRoom,
+      msgList : dataMsgList
+    }})
+  }
+  catch(e) {
+    return sendResponse({res, status : 404, data : "room not found"})
+
+  }
 })
 
 io.on("connection",  (socket) => {
@@ -70,7 +96,7 @@ io.on("connection",  (socket) => {
     switch(event.typeObj) {
       case 'create-room':
         console.log("create room")
-        let resp = await roomDb.roomCreateOne({roomName : event.roomName, owner : getUserInfo?.user_id})
+        let resp = await RoomDb.create({roomName : event.roomName, owner : getUserInfo?.user_id})
         if (resp) {
           console.log("success")
           console.log(resp)
@@ -92,12 +118,18 @@ io.on("connection",  (socket) => {
         console.log('receive msg : ')
         console.log(event)
         console.log("attach msg to room")
+        console.log(getUserInfo)
+        if (!getUserInfo?.user_id) return ;
         let data = {
           roomId : event.roomId ?? "",
-          userId : "42",
-          msg : event.msg ?? ""
+          userId : getUserInfo?.user_id ?? "",
+          msg : event.msg ?? "",
+          email : getUserInfo.email ?? ""
         }
-        await roomMessageCreateOne(data);
+        await RoomMessageDb.create(data);
+
+        // send msg to room :
+        
         // go go go
       break;
       case 'room-list':
@@ -105,17 +137,22 @@ io.on("connection",  (socket) => {
         console.log(event)
       break;
       case 'room-history':
-        console.log("msg")
+        console.log("room-history")
         console.log(event)
+
+       // console.log(await roomDb.)
+        //socket.emit('event', {type})
       break;
       case 'room-join':
-        console.log("join room : ");
+        console.log("room-join : ");
         console.log(event)
         // add room auth check
         if (event.roomId) {
           console.log("* user joinroom : ", event.roomId)
+          let data = await RoomMessageDb.findOneRoomMsg(event.roomId)
           socket.join(event.roomId);
-          socket.emit('event', {typeObj : 'room-history', roomId : event.roomId})
+          // send all room information
+          socket.emit('event', {typeObj : 'room-history', ...data})
         }
       break;
       default :
