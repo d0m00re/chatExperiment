@@ -52,3 +52,21 @@ and data (or separate)
 ### Ladle
 like storybook but with better performance - tech test
 npm run ladle
+
+### Contract definition 
+#### Room definition :
+```ts
+interface IRoom {
+    uuid : string;
+    owner : string;
+    users : string[];
+}
+```
+#### Msg Definition : 
+```ts
+interface IRoomMessage {
+    uuid : string;
+    user : string;
+    owner : string;
+}
+```
