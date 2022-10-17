@@ -28,6 +28,11 @@ class Room {
         return roomListEncode;
     }
 
+    find =  async (roomId : string) => {
+        let roomData = await RoomModel.findById(roomId);
+        return roomData;
+    }
+
     create =  (props : IRoomCreateOne) => {
         return RoomModel.create({
             roomName : props.roomName ?? null,

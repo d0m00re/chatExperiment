@@ -14,7 +14,7 @@ dotenv.config()
 import * as moongoose from './config/database'
 moongoose.connect()
 
-
+import getRoomData from './API/Room/core/controller/getRoomData';
 /*
 let globalRoomManagement = new GlobalRoomsManagement()
 globalRoomManagement.createRoom("general")
@@ -63,14 +63,14 @@ app.get('/roomHistory', async (req : any, res : any) => {
     return sendResponse({res, status : 404, data : "nothing"})
 
   try {
-    let dataRoom = await RoomMessageDb.findOneRoomMsg(id);
-    let dataMsgList = await RoomMessageDb.findAllRoomMsg(id);
-    console.log(dataRoom)
-    console.log(dataMsgList)
-    return sendResponse({res, status : 200, data : {
-      room : dataRoom,
-      msgList : dataMsgList
-    }})
+    //let dataRoom = await RoomDb.find(id);
+    //let dataMsgList = await RoomMessageDb.findAllRoomMsg(id);
+    let room = await getRoomData(id);
+    console.log(room)
+    if (!room)
+      return sendResponse({res, status : 404, data : "room not found"})
+
+    return sendResponse({res, status : 200, data : room})
   }
   catch(e) {
     return sendResponse({res, status : 404, data : "room not found"})
@@ -139,6 +139,9 @@ io.on("connection",  (socket) => {
       case 'room-history':
         console.log("room-history")
         console.log(event)
+        if (!event.roomId) return ;
+        let room = await getRoomData(event.roomId);
+        socket.emit('event', {typeObj : 'room-history', ...room})
 
        // console.log(await roomDb.)
         //socket.emit('event', {type})
@@ -149,7 +152,7 @@ io.on("connection",  (socket) => {
         // add room auth check
         if (event.roomId) {
           console.log("* user joinroom : ", event.roomId)
-          let data = await RoomMessageDb.findOneRoomMsg(event.roomId)
+          let data = await getRoomData(event.roomId)
           socket.join(event.roomId);
           // send all room information
           socket.emit('event', {typeObj : 'room-history', ...data})
